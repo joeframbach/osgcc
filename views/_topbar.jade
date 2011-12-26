@@ -11,11 +11,8 @@
             li: a(href='competitions/upcoming') Upcoming
             li: a(href='competitions/new') Create New
             li.divider
-            li: a(href='competitions/1') OSGCC 1
-            li: a(href='competitions/2') OSGCC 2
-            li: a(href='competitions/3') OSGCC 3
-            li: a(href='competitions/4') OSGCC 4
-            li: a(href='competitions/5') OSGCC 5
+            each comp, comp_id in comps
+              li: a(href='competition/#{comp._id}') #{comp.name}
         li: a(href='/about') About
         li: a(href='/contact') Contact
       ul.nav.secondary-nav

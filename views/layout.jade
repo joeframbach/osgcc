@@ -12,7 +12,7 @@ html
         padding-top: 60px
       }
   body
-    != partial('_topbar')
+    != partial('_topbar',{comps:comps})
     .container-fluid
       != partial('_sidebar')
       .content

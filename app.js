@@ -6,6 +6,8 @@
 var express = module.exports = require('express');
 var conf = require('./conf');
 
+var async = require('async');
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.SchemaTypes.ObjectId;
@@ -23,7 +25,6 @@ UserSchema.plugin(mongooseAuth, {
           }
       }
     }
-  , facebook: true
   , github: {
       everyauth: {
           myHostname: conf.github.hostname
@@ -35,6 +36,19 @@ UserSchema.plugin(mongooseAuth, {
 });
 
 mongoose.model('User', UserSchema);
+
+mongoose.model('Competition', new Schema({
+    name        : String
+  , start       : Date
+  , end         : Date
+}));
+
+mongoose.model('Entry', new Schema({
+    competition : ObjectId
+  , name        : String
+  , github      : String
+}));
+
 mongoose.connect('mongodb://localhost/osgcc');
 
 User = mongoose.model('User');
@@ -68,7 +82,14 @@ var routes = {
 };
 
 app.get('/', function(req, res) {
-  res.render('home');
+  async.parallel({
+    comps: function(callback) {
+      mongoose.model('Competition').find(callback);
+    }
+  },
+  function(err, results) {
+    res.render('home', results);
+  });
 });
 
 app.get('/logout', function(req, res) {
