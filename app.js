@@ -121,7 +121,17 @@ app.get('/competitions/past', function(req, res) {
     }
   },
   function(err, results) {
-    console.log(results);
+    res.render('competitions', results);
+  });
+});
+
+app.get('/competitions/upcoming', function(req, res) {
+  async.parallel({
+    comps: function(callback) {
+      mongoose.model('Competition').find({'start':{'$gt':new Date()}}, callback);
+    }
+  },
+  function(err, results) {
     res.render('competitions', results);
   });
 });
