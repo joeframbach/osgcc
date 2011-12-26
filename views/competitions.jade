@@ -1,0 +1,6 @@
+each comp, comp_id in comps
+  .hero-unit
+    h1 #{comp.name}
+    p Start Date: #{comp.start}
+    p End Date: #{comp.end}
+    p: a.btn.primary.large(href='/competition/#{comp._id}') Details

@@ -114,6 +114,18 @@ app.get('/competition/:id', function(req, res) {
   });
 });
 
+app.get('/competitions/past', function(req, res) {
+  async.parallel({
+    comps: function(callback) {
+      mongoose.model('Competition').find({'end':{'$lt':new Date()}}, callback);
+    }
+  },
+  function(err, results) {
+    console.log(results);
+    res.render('competitions', results);
+  });
+});
+
 app.get('/_banners', routes._banner.list);
 app.get('/_banner/:id', routes._banner.view);
 
