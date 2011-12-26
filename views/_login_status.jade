@@ -1,0 +1,5 @@
+- if (!everyauth.loggedIn)
+  p.pull-right Log in
+- else
+  p.pull-right Logged in as&nbsp;
+    a(href='/profile') `user.id` #{user.id} - aka `everyauth.user.id` #{everyauth.user.id}

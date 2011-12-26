@@ -1,0 +1,30 @@
+.topbar
+  .topbar-inner
+    .container
+      h3: a(href='/') OSGCC
+      ul.nav
+        li.active: a(href='/') Home
+        li.dropdown(data-dropdown='dropdown')
+          a.dropdown-toggle(href='#') Competitions
+          ul.dropdown-menu
+            li: a(href='competitions/past') Past
+            li: a(href='competitions/upcoming') Upcoming
+            li: a(href='competitions/new') Create New
+            li.divider
+            li: a(href='competitions/1') OSGCC 1
+            li: a(href='competitions/2') OSGCC 2
+            li: a(href='competitions/3') OSGCC 3
+            li: a(href='competitions/4') OSGCC 4
+            li: a(href='competitions/5') OSGCC 5
+        li: a(href='/about') About
+        li: a(href='/contact') Contact
+      ul.nav.secondary-nav
+        - if (everyauth.loggedIn)
+          li.dropdown(data-dropdown='dropdown')
+            a.dropdown-toggle(href='#') #{everyauth.github.user.login}
+            ul.dropdown-menu
+              li: a(href='/profile') Profile
+              li.divider
+              li: a(href='/logout') Log out
+        - else
+          li: a(href='/auth/github') Log In
