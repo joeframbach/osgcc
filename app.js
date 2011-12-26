@@ -97,6 +97,23 @@ app.get('/logout', function(req, res) {
   res.redirect('/');
 });
 
+app.get('/competition/:id', function(req, res) {
+  async.parallel({
+    comps: function(callback) {
+      mongoose.model('Competition').find(callback);
+    },
+    comp: function(callback) {
+      mongoose.model('Competition').findById(req.params.id,callback);
+    },
+    entries: function(callback) {
+      mongoose.model('Entry').find({competition:req.params.id},callback);
+    }
+  },
+  function(err, results) {
+    res.render('competition', results);
+  });
+});
+
 app.get('/_banners', routes._banner.list);
 app.get('/_banner/:id', routes._banner.view);
 

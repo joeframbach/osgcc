@@ -1,0 +1,11 @@
+.hero-unit
+  h1 #{comp.name}
+- for (var entry_id=0; entry_id<entries.length; entry_id++)
+  .row
+    .span9
+      h2 #{entries[entry_id].name}
+      p #{entries[entry_id].github}
+    - if (++entry_id < entries.length)
+      .span9
+        h2 #{entries[entry_id].name}
+        p #{entries[entry_id].github}
