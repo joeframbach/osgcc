@@ -80,8 +80,8 @@ app.configure('production', function(){
 
 var current_comps = function(callback) {
   mongoose.model('Competition').find({
-    start:{'$gte':new Date()},
-    end:{'$lte':new Date()}
+    'start':{'$gt':Date.parse('yesterday')},
+    'end':{'$lt':Date.parse('2 days from now')}
   },callback);
 }
 
