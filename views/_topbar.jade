@@ -9,10 +9,11 @@
           ul.dropdown-menu
             li: a(href='/competitions/past') Past
             li: a(href='/competitions/upcoming') Upcoming
-            li: a(href='/competitions/new') Create New
-            li.divider
-            each comp, comp_id in comps
-              li: a(href='/competition/#{comp._id}') #{comp.name}
+            li: a(href='/competition') Create New
+            - if (current_comps.length)
+              li.divider
+              each comp, comp_id in current_comps
+                li: a(href='/competition/#{comp._id}') #{comp.name}
         li: a(href='/about') About
         li: a(href='/contact') Contact
       ul.nav.secondary-nav

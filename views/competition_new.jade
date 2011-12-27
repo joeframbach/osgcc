@@ -1,0 +1,19 @@
+style
+  input.comp-name {
+    height: 60px;
+    font-size: 60px;
+  }
+.hero-unit
+  form(method='post',action='/competition')
+      div.clearfix
+        input.comp-name.span16(name='comp_name',size=30,type='text',placeholder='New Competition Name')
+      div.clearfix
+        div.input
+          div.inline-inputs
+            input.small(type='text',name='start_date',value='May 1, 2012')
+            input.mini(type='text',name='start_time',value='12:00am')
+            |  to
+            input.small(type='text',name='end_date',value='May 1, 2012')
+            input.mini(type='text',name='end_time',value='12:00am') 
+      div.action
+        input.btn.primary(type='submit',value='Create Competition')

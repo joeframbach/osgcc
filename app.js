@@ -8,6 +8,8 @@ var conf = require('./conf');
 
 var async = require('async');
 
+require('datejs');
+
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var ObjectId = mongoose.SchemaTypes.ObjectId;
@@ -76,16 +78,16 @@ app.configure('production', function(){
   app.use(express.errorHandler()); 
 });
 
-var routes = {
-  home: require('./routes/home'),
-  _banner: require('./routes/_banner')
-};
+var current_comps = function(callback) {
+  mongoose.model('Competition').find({
+    start:{'$gte':new Date()},
+    end:{'$lte':new Date()}
+  },callback);
+}
 
 app.get('/', function(req, res) {
   async.parallel({
-    comps: function(callback) {
-      mongoose.model('Competition').find(callback);
-    }
+    current_comps: current_comps
   },
   function(err, results) {
     res.render('home', results);
@@ -99,9 +101,7 @@ app.get('/logout', function(req, res) {
 
 app.get('/competition/:id', function(req, res) {
   async.parallel({
-    comps: function(callback) {
-      mongoose.model('Competition').find(callback);
-    },
+    current_comps: current_comps,
     comp: function(callback) {
       mongoose.model('Competition').findById(req.params.id,callback);
     },
@@ -116,6 +116,7 @@ app.get('/competition/:id', function(req, res) {
 
 app.get('/competitions/past', function(req, res) {
   async.parallel({
+    current_comps: current_comps,
     comps: function(callback) {
       mongoose.model('Competition').find({'end':{'$lt':new Date()}}, callback);
     }
@@ -127,6 +128,7 @@ app.get('/competitions/past', function(req, res) {
 
 app.get('/competitions/upcoming', function(req, res) {
   async.parallel({
+    current_comps: current_comps,
     comps: function(callback) {
       mongoose.model('Competition').find({'start':{'$gt':new Date()}}, callback);
     }
@@ -136,8 +138,26 @@ app.get('/competitions/upcoming', function(req, res) {
   });
 });
 
-app.get('/_banners', routes._banner.list);
-app.get('/_banner/:id', routes._banner.view);
+app.get('/competition', function(req, res) {
+  async.parallel({
+    current_comps: current_comps
+  },
+  function(err, results) {
+    res.render('competition_new', results);
+  });
+});
+
+app.post('/competition', function(req, res) {
+  var Competition = mongoose.model('Competition');
+  var comp = new Competition();
+  comp.name = req.param('comp_name')
+  comp.start = Date.parse(req.param('start_date') + ' ' + req.param('start_time'));
+  comp.end = Date.parse(req.param('end_date') + ' ' + req.param('end_time'));
+  comp.on('save', function(new_comp) {
+    res.redirect('/competition/'+new_comp._id);
+  });
+  comp.save();
+});
 
 mongooseAuth.helpExpress(app);
 

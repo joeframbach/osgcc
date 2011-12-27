@@ -4,6 +4,7 @@ html
     title OSGCC
     link(rel='stylesheet', href='http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css')
     script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js')
+    script(type='text/javascript', src='http://cachedcommons.org/cache/datejs/1.0.0/javascripts/date-min.js')
     script(type='text/javascript', src='http://twitter.github.com/bootstrap/1.4.0/bootstrap-dropdown.js')
     script(type='text/javascript')
       $('.nav').dropdown();
@@ -12,7 +13,7 @@ html
         padding-top: 60px
       }
   body
-    != partial('_topbar',{comps:comps})
+    != partial('_topbar',{current_comps:current_comps})
     .container-fluid
       != partial('_sidebar')
       .content
