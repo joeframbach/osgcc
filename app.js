@@ -39,11 +39,21 @@ UserSchema.plugin(mongooseAuth, {
 
 mongoose.model('User', UserSchema);
 
-mongoose.model('Competition', new Schema({
+CompetitionSchema = new Schema({
     name        : String
   , start       : Date
   , end         : Date
-}));
+});
+
+CompetitionSchema.methods.isPast = function() {
+  return this.end.isBefore();
+}
+
+CompetitionSchema.methods.isUpcoming = function() {
+  return this.start.isAfter();
+}
+
+mongoose.model('Competition', CompetitionSchema);
 
 mongoose.model('Entry', new Schema({
     competition : ObjectId

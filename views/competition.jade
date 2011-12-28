@@ -1,6 +1,23 @@
 .hero-unit
   h1 #{comp.name}
   p #{comp.start} to #{comp.end}
+
+- if (everyauth.loggedIn && comp.isUpcoming())
+  .row
+    .span9
+      p To enter this competition:
+      ol
+        li Create your git repo. The repo name is your entry name.
+        li Add the following url to your Post-Reveive Hooks.
+           // a(href='http://help.github.com/post-receive-hooks/') Info
+           br
+           span.label.notice http://50.56.223.160:3000/update/TODO-HOOK-URL
+        li Create a README file and push your initial commit.
+        li Share the Post-Receive Hook URL with your team members.
+           br
+           span.label.important Do not share the URL with other teams.
+        li Do not begin coding until #{comp.start}.
+
 - for (var entry_id=0; entry_id<entries.length; entry_id++)
   .row
     .span9
