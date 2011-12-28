@@ -16,6 +16,8 @@ var ObjectId = mongoose.SchemaTypes.ObjectId;
 
 var mongooseAuth = require('mongoose-auth');
 
+var crypto = require('crypto');
+
 var UserSchema = new Schema({});
 var User;
 
@@ -43,6 +45,7 @@ CompetitionSchema = new Schema({
     name        : String
   , start       : Date
   , end         : Date
+  , salt        : {type:String, default:(+new Date()).toString(16)}
 });
 
 CompetitionSchema.methods.isPast = function() {
@@ -120,6 +123,16 @@ app.get('/competition/:id', function(req, res) {
     }
   },
   function(err, results) {
+    if (req.loggedIn) {
+      // competition.salt is randomly generated for each competition
+      // Hash the user id with the comp_salt.
+      // comp_salt is not publicly accessible so only the
+      // user will see this url.
+      var cipher = crypto.createCipher('aes-128-cbc',''+results.comp.salt);
+      var crypted = cipher.update(''+req.user._id, 'ascii', 'hex');
+      crypted += cipher.final('hex');
+      results.entryURL = crypted;
+    }
     res.render('competition', results);
   });
 });
