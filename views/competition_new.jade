@@ -2,6 +2,7 @@ style
   input.comp-name {
     height: 60px;
     font-size: 60px;
+    line-height: 68px;
   }
 .hero-unit
   form(method='post',action='/competition')
@@ -10,10 +11,10 @@ style
       div.clearfix
         div.input
           div.inline-inputs
-            input.small(type='text',name='start_date',value='May 1, 2012')
-            input.mini(type='text',name='start_time',value='12:00am')
+            input.small(type='text',name='start_date',value=Date.today().add({months:3}).toString('MMM dd, yyyy'))
+            input.mini(type='text',name='start_time',value='6:00pm')
             |  to
-            input.small(type='text',name='end_date',value='May 1, 2012')
-            input.mini(type='text',name='end_time',value='12:00am') 
+            input.small(type='text',name='end_date',value=Date.today().add({months:3,days:1}).toString('MMM dd, yyyy'))
+            input.mini(type='text',name='end_time',value='6:00pm') 
       div.action
         input.btn.primary(type='submit',value='Create Competition')
