@@ -6,27 +6,232 @@
     |  #{Date.parse(comp.end).toString('ddd, MMMM d, yyyy h:mm tt')}
 
   - if (everyauth.loggedIn && comp.isUpcoming())
-    .row
-      .span9
-        h2 Enter this competition
-        ol
-          li Create your git repo. The repo name is your entry name.
-          li Add the following url to your Post-Reveive Hooks.
-             // a(href='http://help.github.com/post-receive-hooks/') Info
-             br
-             input.span7(type='text',value='http://50.56.223.160:3000/update/#{comp._id}/#{entryURL}')
-          li Create a README file and push your initial commit.
-          li Share the Post-Receive Hook URL with your team members.
-             br
-             span.label.important Do not share the URL with other teams.
-          li Do not begin coding until #{comp.start}.
+    button.launch-leader-modal.btn.primary
+      | Join as a Team Leader
+    |  
+    button.launch-member-modal.btn.secondary
+      | Join as a Team Member
 
 - for (var entry_id=0; entry_id<entries.length; entry_id++)
   .row
-    .span9
+    .span8
       h2 #{entries[entry_id].name}
       p #{entries[entry_id].github}
     - if (++entry_id < entries.length)
-      .span9
+      .span8
         h2 #{entries[entry_id].name}
         p #{entries[entry_id].github}
+
+script(src='/javascripts/async.min.js')
+
+script
+  $(function() {
+    $('.modal').modal({backdrop:'static'});
+
+    $('.launch-leader-modal').click(function() {
+      $('.modal').each(function(i,m) { $(m).modal('hide') });
+      $('#leader-modal').modal('show');
+    });
+
+    $('.launch-leader-modal-actions').click(function() {
+      $('.modal').each(function(i,m) { $(m).modal('hide') });
+      $('#leader-modal-actions').modal('show');
+      $('.confirm-leader-modal-actions').removeAttr('disabled');
+    });
+
+    $('.confirm-leader-modal-actions').click(function() {
+      var lis = $('#leader-modal-actions li');
+
+      $('.launch-leader-modal').remove();
+      $('.confirm-leader-modal-actions')
+        .removeClass('primary')
+        .addClass('info')
+        .html('In Progress')
+        .attr('disabled','disabled');
+
+      async.series({
+        'create-repo':function(callback) {
+          $(lis[0]).addClass('inprogress');
+          setTimeout(function() {
+            $(lis[0]).removeClass('inprogress').addClass('complete');
+            callback(null,'ok');
+          },1500)
+        },
+        'enable-hook':function(callback) {
+          $(lis[1]).addClass('inprogress');
+          setTimeout(function() {
+            $(lis[1]).removeClass('inprogress').addClass('complete');
+            callback(null,'ok');
+          },1500)
+        },
+        'create-readme':function(callback) {
+          $(lis[2]).addClass('inprogress');
+          setTimeout(function() {
+            $(lis[2]).removeClass('inprogress').addClass('complete');
+            callback(null,'ok');
+          },1500)
+        },
+        'initial-push':function(callback) {
+          $(lis[3]).addClass('inprogress');
+          setTimeout(function() {
+            $(lis[3]).removeClass('inprogress').addClass('complete');
+            callback(null,'ok');
+          },1500)
+        }
+      },
+      function(err, results) {
+        if (err) {
+          console.log('fucked up');
+        }
+        else {
+          $('.confirm-leader-modal-actions')
+            .removeClass('info').addClass('success')
+            .removeClass('confirm-leader-modal-actions')
+            .addClass('launch-leader-modal-finished')
+            .removeAttr('disabled')
+            .html('Next');
+        }
+      })
+        
+    });
+
+    $('.launch-leader-modal-finished').live('click', function() {
+      $('.modal').each(function(i,m) { $(m).modal('hide') });
+      $('#leader-modal-finished').modal('show');
+    });
+
+    $('.launch-member-modal').click(function() {
+      $('.modal').each(function(i,m) { $(m).modal('hide') });
+      $('#member-modal').modal('show');
+    });
+    
+    $('.launch-member-modal-actions').click(function() {
+      $('.modal').each(function(i,m) { $(m).modal('hide') });
+      $('#member-modal-actions').modal('show');
+    });
+
+    $('.confirm-member-modal-actions').click(function() {
+      $('.modal').each(function(i,m) { $(m).modal('hide') });
+      $('#member-modal-finished').modal('show');
+    });
+
+    $('.close-modal').click(function() {
+      $('.modal').each(function(i,m) { $(m).modal('hide') });
+    });
+    
+  });
+
+div#leader-modal.modal.hide.fade
+  .modal-header
+    a.close(href='#') &times;
+    h3 Team Leader
+  .modal-body
+    form
+      .clearfix
+        label(for='entry-name') Entry Name
+        .input
+          input#entry-name.span6(type='text')
+          span.help-block
+            | This is the name of your github repo.
+            br
+            | May be renamed at any time.
+      .clearfix
+        label(for='entry-description') Description
+        .input
+          textarea#entry-description(rows=3,name='entry-description') 
+  .modal-footer
+    button.launch-leader-modal-actions.btn.primary Next
+    button.close-modal.btn.secondary Cancel
+
+div#leader-modal-actions.modal.hide.fade
+    .modal-header
+      a.close(href='#') &times;
+      h3 Team Leader
+    .modal-body
+      .row
+        .span9
+          p By confirming, OGSCC will automatically:
+          br
+          ol
+            li Create your git repository.
+            li Enable OSGCC Post-Receive Hooks.
+            li Create a README file.
+            li Push your initial commit to test the hook.
+    .modal-footer
+      button.confirm-leader-modal-actions.btn.primary Confirm
+      button.launch-leader-modal.btn.secondary Edit
+
+div#leader-modal-finished.modal.hide.fade
+    .modal-header
+      a.close(href='#') &times;
+      h3 Team Leader
+    .modal-body
+      h2 OK!
+      p Next steps:
+      ol
+            li In your terminal, run
+              br
+              | mkdir "#{comp.name}" && cd "#{comp.name}"
+              br
+              | git clone git@fdsafdsfs...
+            li Share this setup code with your team members.
+              br
+              | QWERTY1234
+              br
+              span.label.important Do not share the code with other teams.
+            li Do not begin coding until #{comp.start}.
+    .modal-footer
+      button.close-modal.btn.primary OK Neat!
+
+div#member-modal.modal.hide.fade
+  .modal-header
+    a.close(href='#') &times;
+    h3 Team Member
+  .modal-body
+    form
+      .clearfix
+        label(for='entry-name') Entry Code
+        .input
+          input#entry-code.span6(type='text')
+          span.help-block
+            | Ask your team leader for this code.
+  .modal-footer
+    button.launch-member-modal-actions.btn.primary Next
+    button.close-modal.btn.secondary Cancel
+
+div#member-modal-actions.modal.hide.fade
+    .modal-header
+      a.close(href='#') &times;
+      h3 Team Member
+    .modal-body
+      .row
+        .span9
+          p By confirming, OGSCC will automatically:
+          br
+          ol
+            li Fork your team leader's git repository.
+            li Enable OSGCC Post-Receive Hooks.
+              | Every time you push, OSGCC will be updated.
+            li Update the README file.
+            li Push your initial commit to test the hook.
+    .modal-footer
+      button.confirm-member-modal-actions.btn.primary Confirm
+      button.launch-member-modal.btn.secondary Edit
+
+div#member-modal-finished.modal.hide.fade
+    .modal-header
+      a.close(href='#') &times;
+      h3 Team Member
+    .modal-body
+      h2 OK!
+      p Next steps:
+      ol
+            li In your terminal, run
+              br
+              | mkdir "#{comp.name}" && cd "#{comp.name}"
+              br
+              | git clone git@fdsafdsfs...
+            li Do not begin coding until #{comp.start}.
+    .modal-footer
+      button.close-modal.btn.primary OK Neat!
+
