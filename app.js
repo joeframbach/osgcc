@@ -16,6 +16,7 @@ var ObjectId = mongoose.SchemaTypes.ObjectId;
 
 var mongooseAuth = require('mongoose-auth');
 
+var https = require('https');
 var crypto = require('crypto');
 
 var UserSchema = new Schema({});
@@ -98,6 +99,25 @@ var current_comps = function(callback) {
   },callback);
 }
 
+var github_api = function(url, token, method, callback) {
+  var request = https.request({
+      host: 'api.github.com'
+    , path: url+'?access_token='+token
+    , method: method
+  },
+  function(response) {
+    var data = '';
+    response.setEncoding('utf8');
+    response.on('data', function (chunk) {
+      data += chunk;
+    });
+    response.on('end', function () {
+      callback(data);
+    });
+  });
+  request.end();
+}
+
 app.get('/', function(req, res) {
   async.parallel({
     current_comps: current_comps
@@ -110,6 +130,18 @@ app.get('/', function(req, res) {
 app.get('/logout', function(req, res) {
   req.logout();
   res.redirect('/');
+});
+
+app.get('/profile', function(req, res) {
+  if (!req.loggedIn) {
+    res.redirect('/');
+  }
+  else {
+    github_api('/user',req.session.auth.github.accessToken,'GET',function(data) {
+      res.writeHead(200, {'Content-Type': 'text/plain'});
+      res.end(data);
+    });
+  }
 });
 
 app.get('/competition/:id', function(req, res) {
