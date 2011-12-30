@@ -52,7 +52,8 @@ script
       async.series({
         'create-repo':function(callback) {
           $(lis[0]).addClass('inprogress');
-          setTimeout(function() {
+          $.post('/competition/#{comp._id}/entry',{},function(data) {
+            console.log(data);
             $(lis[0]).removeClass('inprogress').addClass('complete');
             callback(null,'ok');
           },1500)

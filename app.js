@@ -59,10 +59,22 @@ CompetitionSchema.methods.isUpcoming = function() {
 
 mongoose.model('Competition', CompetitionSchema);
 
+function entryCode() {
+    charSet = 'ABCDEFGHJKLMNPQRTUVWXY346789';
+    var randomString = '';
+    for (var i = 0; i < 6; i++) {
+        var randomPoz = Math.floor(Math.random() * charSet.length);
+        randomString += charSet.substring(randomPoz,randomPoz+1);
+    }
+    return randomString;
+}
+
 mongoose.model('Entry', new Schema({
     competition : ObjectId
   , name        : String
   , github      : String
+  , code        : {type:String, default:entryCode()}
+  , users       : [ObjectId]
 }));
 
 mongoose.connect('mongodb://localhost/osgcc');
@@ -166,6 +178,116 @@ app.get('/competition/:id', function(req, res) {
       results.entryURL = crypted;
     }
     res.render('competition', results);
+  });
+});
+
+app.post('/competition/:id/entry', function(req, res) {
+  var Entry = mongoose.model('Entry');
+  var entry;
+  async.serial({
+    check: function(callback) {
+      if (req.param('code')) {
+        Entry.findOne({
+          competition:req.params.id,
+          code:req.param('code')
+        },
+        function(err, docs) {
+          if (err) callback(err);
+          else {
+            entry = docs;
+            callback(null, entry);
+          }
+        });
+      }
+      else {
+        entry = new Entry({
+          competition: req.params.id,
+          name: req.param('name'),
+        });
+        callback(null, entry);
+      }
+    },
+    update: function(callback) {
+      entry.users.push(req.user._id);
+      entry.on('save', function(new_entry) {
+        callback(null, new_entry);
+      });
+      entry.save();
+    }
+  },
+  function(err, results) {
+    console.log(results);
+    res.json(results);
+  });
+});
+
+app.post('/competition/:id/entry/:code/create-repo', function(req, res) {
+  var entry;
+  async.serial({
+    entry: function(callback) {
+      // get entry
+    },
+    update: function(callback) {
+      // update entry
+    }
+  },
+  function(err, results) {
+  });
+});
+
+app.post('/competition/:id/entry/:code/fork-repo', function(req, res) {
+  var entry;
+  async.serial({
+    entry: function(callback) {
+      // get entry
+    },
+    update: function(callback) {
+      // update entry
+    }
+  },
+  function(err, results) {
+  });
+});
+
+app.post('/competition/:id/entry/:code/enable-hook', function(req, res) {
+  var entry;
+  async.serial({
+    entry: function(callback) {
+      // get entry
+    },
+    update: function(callback) {
+      // update entry
+    }
+  },
+  function(err, results) {
+  });
+});
+
+app.post('/competition/:id/entry/:code/add-readme', function(req, res) {
+  var entry;
+  async.serial({
+    entry: function(callback) {
+      // get entry
+    },
+    update: function(callback) {
+      // update entry
+    }
+  },
+  function(err, results) {
+  });
+});
+
+app.post('/competition/:id/entry/:code/test-hook', function(req, res) {
+  var entry;
+  async.serial({
+    entry: function(callback) {
+      // get entry
+    },
+    update: function(callback) {
+      // update entry
+    }
+  },
+  function(err, results) {
   });
 });
 
