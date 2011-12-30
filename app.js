@@ -54,6 +54,7 @@ app.get('*', function(req, res, next) {
 
 require('./controllers/home')(app);
 require('./controllers/competition')(app);
+require('./controllers/entry')(app);
 
 mongooseAuth.helpExpress(app);
 
